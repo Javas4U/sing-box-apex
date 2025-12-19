@@ -1,0 +1,11 @@
+Run golangci/golangci-lint-action@v8
+prepare environment
+run golangci-lint
+  Running [/home/runner/golangci-lint-2.4.0-linux-amd64/golangci-lint run  --timeout=30m] in [/home/runner/work/sing-box-apex/sing-box-apex] ...
+  log/export.go:1: : # github.com/sagernet/sing-box/log
+  Error: log/rotation.go:52:2: declared and not used: dir (typecheck)
+  package log
+  1 issues:
+  * typecheck: 1
+  Error: issues found
+  Ran golangci-lint in 100666ms

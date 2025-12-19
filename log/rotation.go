@@ -49,7 +49,6 @@ func (w *RotatingWriter) getRotatedFilePath(t time.Time) string {
 		return w.baseFilePath
 	}
 
-	dir := filepath.Dir(w.baseFilePath)
 	ext := filepath.Ext(w.baseFilePath)
 	nameWithoutExt := w.baseFilePath[:len(w.baseFilePath)-len(ext)]
 
