@@ -23,10 +23,11 @@ on:
           - tvOS
           - macOS-standalone
           - publish-android
-  push:
-    branches:
-      - main-next
-      - dev-next
+  # push 触发已禁用,仅保留手动触发和 workflow_dispatch
+  # push:
+  #   branches:
+  #     - main-next
+  #     - dev-next
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.build }}
