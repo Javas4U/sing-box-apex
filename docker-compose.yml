@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sing-box:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sing-box-server
+    restart: unless-stopped
+    network_mode: host  # 使用主机网络,避免端口映射问题
+    cap_add:
+      - NET_ADMIN      # 需要网络管理权限(用于TUN等功能)
+    volumes:
+      # 配置文件
+      - ./config:/etc/sing-box:ro
+      # 日志持久化
+      - ./logs:/var/log/sing-box
+      # 数据持久化(缓存、GeoIP等)
+      - ./data:/var/lib/sing-box
+    command: run -c /etc/sing-box/config.json
+    environment:
+      - TZ=Asia/Shanghai  # 时区设置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

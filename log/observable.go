@@ -21,6 +21,8 @@ type defaultFactory struct {
 	writer            io.Writer
 	file              *os.File
 	filePath          string
+	rotatingWriter    *RotatingWriter
+	rotateStrategy    RotateStrategy
 	platformWriter    PlatformWriter
 	needObservable    bool
 	level             Level
@@ -36,6 +38,18 @@ func NewDefaultFactory(
 	platformWriter PlatformWriter,
 	needObservable bool,
 ) ObservableFactory {
+	return NewDefaultFactoryWithRotation(ctx, formatter, writer, filePath, platformWriter, needObservable, RotateNone)
+}
+
+func NewDefaultFactoryWithRotation(
+	ctx context.Context,
+	formatter Formatter,
+	writer io.Writer,
+	filePath string,
+	platformWriter PlatformWriter,
+	needObservable bool,
+	rotateStrategy RotateStrategy,
+) ObservableFactory {
 	factory := &defaultFactory{
 		ctx:       ctx,
 		formatter: formatter,
@@ -45,6 +59,7 @@ func NewDefaultFactory(
 		},
 		writer:         writer,
 		filePath:       filePath,
+		rotateStrategy: rotateStrategy,
 		platformWriter: platformWriter,
 		needObservable: needObservable,
 		level:          LevelTrace,
@@ -61,12 +76,24 @@ func NewDefaultFactory(
 
 func (f *defaultFactory) Start() error {
 	if f.filePath != "" {
-		logFile, err := filemanager.OpenFile(f.ctx, f.filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
-		if err != nil {
-			return err
+		// 如果启用了日志轮转
+		if f.rotateStrategy != RotateNone {
+			f.rotatingWriter = NewRotatingWriter(f.ctx, f.filePath, f.rotateStrategy)
+			f.writer = f.rotatingWriter
+			// 触发第一次轮转以创建初始文件
+			_, err := f.rotatingWriter.Write([]byte{})
+			if err != nil {
+				return err
+			}
+		} else {
+			// 不使用轮转,保持原有逻辑
+			logFile, err := filemanager.OpenFile(f.ctx, f.filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+			if err != nil {
+				return err
+			}
+			f.writer = logFile
+			f.file = logFile
 		}
-		f.writer = logFile
-		f.file = logFile
 	}
 	return nil
 }
@@ -74,6 +101,7 @@ func (f *defaultFactory) Start() error {
 func (f *defaultFactory) Close() error {
 	return common.Close(
 		common.PtrOrNil(f.file),
+		common.PtrOrNil(f.rotatingWriter),
 		f.subscriber,
 	)
 }

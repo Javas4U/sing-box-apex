@@ -1,0 +1,11 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "output": "/var/log/sing-box.log",
+    "timestamp": true,
+    "rotate_strategy": "hourly"
+  },
+  "inbounds": [],
+  "outbounds": []
+}

@@ -49,13 +49,28 @@ func New(options Options) (Factory, error) {
 		FullTimestamp:    logOptions.Timestamp,
 		TimestampFormat:  "-0700 2006-01-02 15:04:05",
 	}
-	factory := NewDefaultFactory(
+
+	// 解析日志轮转策略
+	var rotateStrategy RotateStrategy
+	switch logOptions.RotateStrategy {
+	case "hourly":
+		rotateStrategy = RotateHourly
+	case "daily":
+		rotateStrategy = RotateDaily
+	case "", "none":
+		rotateStrategy = RotateNone
+	default:
+		return nil, E.New("invalid rotate strategy: ", logOptions.RotateStrategy)
+	}
+
+	factory := NewDefaultFactoryWithRotation(
 		options.Context,
 		logFormatter,
 		logWriter,
 		logFilePath,
 		options.PlatformWriter,
 		options.Observable,
+		rotateStrategy,
 	)
 	if logOptions.Level != "" {
 		logLevel, err := ParseLevel(logOptions.Level)

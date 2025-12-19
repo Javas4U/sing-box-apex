@@ -37,11 +37,12 @@ func (o *Options) UnmarshalJSONContext(ctx context.Context, content []byte) erro
 }
 
 type LogOptions struct {
-	Disabled     bool   `json:"disabled,omitempty"`
-	Level        string `json:"level,omitempty"`
-	Output       string `json:"output,omitempty"`
-	Timestamp    bool   `json:"timestamp,omitempty"`
-	DisableColor bool   `json:"-"`
+	Disabled       bool   `json:"disabled,omitempty"`
+	Level          string `json:"level,omitempty"`
+	Output         string `json:"output,omitempty"`
+	Timestamp      bool   `json:"timestamp,omitempty"`
+	DisableColor   bool   `json:"-"`
+	RotateStrategy string `json:"rotate_strategy,omitempty"` // 日志轮转策略: none, hourly, daily
 }
 
 type StubOptions struct{}
