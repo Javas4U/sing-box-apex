@@ -23,13 +23,19 @@ const (
 
 // RotatingWriter 支持日志轮转的 Writer
 type RotatingWriter struct {
-	ctx          context.Context
-	baseFilePath string          // 基础文件路径,如 /var/log/sing-box.log
-	strategy     RotateStrategy  // 轮转策略
-	currentFile  *os.File        // 当前打开的文件
-	currentHour  int             // 当前文件对应的小时
-	currentDay   int             // 当前文件对应的天
-	mu           sync.Mutex      // 保护并发写入
+	ctx context.Context
+	// 基础文件路径,如 /var/log/sing-box.log
+	baseFilePath string
+	// 轮转策略
+	strategy RotateStrategy
+	// 当前打开的文件
+	currentFile *os.File
+	// 当前文件对应的小时
+	currentHour int
+	// 当前文件对应的天
+	currentDay int
+	// 保护并发写入
+	mu sync.Mutex
 }
 
 // NewRotatingWriter 创建一个支持日志轮转的 Writer
