@@ -116,7 +116,7 @@ func (t *Tracker) logConnection(ctx context.Context, network string, metadata ad
 			entry.User = users[userIndex]
 		}
 	}
-	
+
 	// Fallback to metadata.User if full details not found
 	if entry.User == nil && metadata.User != "" {
 		entry.User = metadata.User
