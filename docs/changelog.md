@@ -2,6 +2,159 @@
 icon: material/alert-decagram
 ---
 
+#### 1.13.0-beta.8
+
+* Fixes and improvements
+
+#### 1.12.18
+
+* Add fallback routing rule for `auto_redirect` **1**
+* Fixes and improvements
+
+**1**:
+
+Adds a fallback iproute2 rule checked after system default rules (32766: main, 32767: default),
+ensuring traffic is routed to the sing-box table when no route is found in system tables.
+
+The rule index can be customized via `auto_redirect_iproute2_fallback_rule_index` (default: 32768).
+
+#### 1.13.0-beta.6
+
+* Update uTLS to v1.8.2 **1**
+* Fixes and improvements
+
+**1**:
+
+This update fixes missing padding extension for Chrome 120+ fingerprints.
+
+Also, documentation has been updated with a warning about uTLS fingerprinting vulnerabilities.
+uTLS is not recommended for censorship circumvention due to fundamental architectural limitations;
+use NaiveProxy instead for TLS fingerprint resistance.
+
+#### 1.12.17
+
+* Update uTLS to v1.8.2 **1**
+* Fixes and improvements
+
+**1**:
+
+This update fixes missing padding extension for Chrome 120+ fingerprints.
+
+Also, documentation has been updated with a warning about uTLS fingerprinting vulnerabilities.
+uTLS is not recommended for censorship circumvention due to fundamental architectural limitations;
+use NaiveProxy instead for TLS fingerprint resistance.
+
+#### 1.13.0-beta.5
+
+* Fixes and improvements
+
+#### 1.12.16
+
+* Fixes and improvements
+
+#### 1.13.0-beta.4
+
+* Apple/Android: Add support for sharing configurations via [QRS](https://github.com/qifi-dev/qrs)
+* Android: Add support for resisting VPN detection via Xposed
+* Update quic-go to v0.59.0
+* Fixes and improvements
+
+#### 1.13.0-beta.2
+
+* Add `bind_address_no_port` option for dial fields **1**
+* Fixes and improvements
+
+**1**:
+
+Adds the Linux socket option `IP_BIND_ADDRESS_NO_PORT` support when explicitly binding to a source address.
+
+This allows reusing the same source port for multiple connections, improving scalability for high-concurrency proxy scenarios.
+
+See [Dial Fields](/configuration/shared/dial/#bind_address_no_port).
+
+#### 1.13.0-beta.1
+
+* Add system interface support for Tailscale endpoint **1**
+* Fixes and improvements
+
+**1**:
+
+Tailscale endpoint can now create a system TUN interface to handle traffic directly.
+
+See [Tailscale endpoint](/configuration/endpoint/tailscale/#system_interface).
+
+#### 1.12.15
+
+* Fixes and improvements
+
+#### 1.13.0-alpha.36
+
+* Downgrade quic-go to v0.57.1
+* Fixes and improvements
+
+#### 1.13.0-alpha.35
+
+* Add pre-match support for `auto_redirect` **1**
+* Fixes and improvements
+
+**1**:
+
+`auto_redirect` now allows you to bypass sing-box for connections based on routing rules.
+
+A new rule action `bypass` is introduced to support this feature. When matched during pre-match, the connection will bypass sing-box and connect directly.
+
+This feature requires Linux with `auto_redirect` enabled.
+
+See [Pre-match](/configuration/shared/pre-match/) and [Rule Action](/configuration/route/rule_action/#bypass).
+
+#### 1.13.0-alpha.34
+
+* Add Chrome Root Store certificate option **1**
+* Add new options for ACME DNS-01 challenge providers **2**
+* Add Wi-Fi state support for Linux and Windows **3**
+* Update naiveproxy to 143.0.7499.109
+* Update quic-go to v0.58.0
+* Update tailscale to v1.92.4
+* Drop support for go1.23 **4**
+* Drop support for Android 5.0 **5**
+
+**1**:
+
+Adds `chrome` as a new certificate store option alongside `mozilla`.
+Both stores filter out China-based CA certificates.
+
+See [Certificate](/configuration/certificate/#store).
+
+**2**:
+
+See [DNS-01 Challenge](/configuration/shared/dns01_challenge/).
+
+**3**:
+
+sing-box can now monitor Wi-Fi state on Linux and Windows to enable routing rules based on `wifi_ssid` and `wifi_bssid`.
+
+See [Wi-Fi State](/configuration/shared/wifi-state/).
+
+**4**:
+
+Due to maintenance difficulties, sing-box 1.13.0 requires at least Go 1.24 to compile.
+
+**5**:
+
+Due to maintenance difficulties, sing-box 1.13.0 will be the last version to support Android 5.0,
+and only through a separate legacy build (with `-legacy-android-5` suffix).
+
+For standalone binaries, the minimum Android version has been raised to Android 6.0,
+since Termux requires Android 7.0 or later.
+
+#### 1.12.14
+
+* Fixes and improvements
+
+#### 1.13.0-alpha.33
+
+* Fixes and improvements
+
 #### 1.13.0-alpha.32
 
 * Remove `certificate_public_key_sha256` option for NaiveProxy outbound **1**
