@@ -109,5 +109,11 @@
       }
     ],
     "final": "direct"
+  },
+  "experimental": {
+    "access_log": {
+      "enabled": true,
+      "path": "access.log"
+    }
   }
 }

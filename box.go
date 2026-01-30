@@ -21,6 +21,7 @@ import (
 	"github.com/sagernet/sing-box/dns"
 	"github.com/sagernet/sing-box/dns/transport/local"
 	"github.com/sagernet/sing-box/experimental"
+	"github.com/sagernet/sing-box/experimental/accesslog"
 	"github.com/sagernet/sing-box/experimental/cachefile"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
@@ -137,6 +138,9 @@ func New(options Options) (*Box, error) {
 	}
 	if experimentalOptions.V2RayAPI != nil && experimentalOptions.V2RayAPI.Listen != "" {
 		needV2RayAPI = true
+	}
+	if experimentalOptions.AccessLog != nil && experimentalOptions.AccessLog.Enabled {
+		// Log will be created later
 	}
 	platformInterface := service.FromContext[adapter.PlatformInterface](ctx)
 	var defaultLogWriter io.Writer
@@ -340,6 +344,11 @@ func New(options Options) (*Box, error) {
 		cacheFile := cachefile.New(ctx, common.PtrValueOrDefault(experimentalOptions.CacheFile))
 		service.MustRegister[adapter.CacheFile](ctx, cacheFile)
 		internalServices = append(internalServices, cacheFile)
+	}
+	if experimentalOptions.AccessLog != nil && experimentalOptions.AccessLog.Enabled {
+		accessLogTracker := accesslog.NewTracker(ctx, logFactory.NewLogger("access-log"), *experimentalOptions.AccessLog, options.Inbounds)
+		router.AppendTracker(accessLogTracker)
+		internalServices = append(internalServices, accessLogTracker)
 	}
 	if needClashAPI {
 		clashAPIOptions := common.PtrValueOrDefault(experimentalOptions.ClashAPI)
