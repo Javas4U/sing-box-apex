@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
 
 env:
-  # Harbor 私有镜像仓库配置
-  REGISTRY: ${{ secrets.HARBOR_REGISTRY }}
-  IMAGE_NAME: ${{ secrets.HARBOR_REGISTRY }}/${{ secrets.HARBOR_PROJECT }}/sing-box-apex
+  # ACR/Docker 镜像仓库配置
+  REGISTRY: ${{ secrets.ACR_REGISTRY }}
+  IMAGE_NAME: ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/sing-box-apex
 
 jobs:
   build-and-push:
@@ -33,13 +33,13 @@ jobs:
             image=moby/buildkit:latest
             network=host
 
-      - name: 登录到 Harbor 镜像仓库
+       - name: 登录到镜像仓库
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.HARBOR_REGISTRY }}
-          username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
+          registry: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: 获取版本信息
         id: version
@@ -55,18 +55,10 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            # 版本标签: v1.0.0
-            type=semver,pattern={{version}}
-            # 主版本.次版本: v1.0
-            type=semver,pattern={{major}}.{{minor}}
-            # 主版本: v1
-            type=semver,pattern={{major}}
-            # 提交 SHA 短标签
-            type=sha,prefix={{branch}}-,format=short
-            # 分支名作为标签
+            # 分支名作为"最新版本"指针,会被后续提交覆盖(这是预期行为)
             type=ref,event=branch
-            # main-next 分支打 latest tag
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main-next' }}
+            # 始终打上 latest tag,指向最新构建的镜像
+            type=raw,value=latest
           flavor: |
             latest=false
 
