@@ -2,9 +2,8 @@ package accesslog
 
 import (
 	"context"
-	"net"
-
 	stdjson "encoding/json"
+	"net"
 	"sync"
 	"time"
 

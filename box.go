@@ -139,9 +139,7 @@ func New(options Options) (*Box, error) {
 	if experimentalOptions.V2RayAPI != nil && experimentalOptions.V2RayAPI.Listen != "" {
 		needV2RayAPI = true
 	}
-	if experimentalOptions.AccessLog != nil && experimentalOptions.AccessLog.Enabled {
-		// Log will be created later
-	}
+
 	platformInterface := service.FromContext[adapter.PlatformInterface](ctx)
 	var defaultLogWriter io.Writer
 	if platformInterface != nil {
