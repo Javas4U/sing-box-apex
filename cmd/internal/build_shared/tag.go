@@ -26,8 +26,14 @@ func ReadTagVersionRev() (badversion.Version, error) {
 }
 
 func ReadTagVersion() (badversion.Version, error) {
-	currentTag := common.Must1(shell.Exec("git", "describe", "--tags").ReadOutput())
-	currentTagRev := common.Must1(shell.Exec("git", "describe", "--tags", "--abbrev=0").ReadOutput())
+	currentTag, err := shell.Exec("git", "describe", "--tags").ReadOutput()
+	if err != nil {
+		return badversion.Version{Identifier: "dev"}, nil
+	}
+	currentTagRev, err := shell.Exec("git", "describe", "--tags", "--abbrev=0").ReadOutput()
+	if err != nil {
+		return badversion.Version{Identifier: "dev"}, nil
+	}
 	version := badversion.Parse(currentTagRev[1:])
 	if currentTagRev != currentTag {
 		if version.PreReleaseIdentifier == "" {
