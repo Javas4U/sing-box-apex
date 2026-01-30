@@ -3,7 +3,7 @@ package accesslog
 import (
 	"context"
 	"net"
-	"os"
+
 	stdjson "encoding/json"
 	"sync"
 	"time"
@@ -40,11 +40,15 @@ func NewTracker(ctx context.Context, logger log.ContextLogger, options option.Ac
 
 func (t *Tracker) buildUserMap(inbounds []option.Inbound) {
 	for _, inbound := range inbounds {
-		if len(inbound.Options) == 0 {
+		if inbound.Options == nil {
+			continue
+		}
+		data, err := stdjson.Marshal(inbound.Options)
+		if err != nil {
 			continue
 		}
 		var optionsMap map[string]any
-		if err := stdjson.Unmarshal(inbound.Options, &optionsMap); err != nil {
+		if err := stdjson.Unmarshal(data, &optionsMap); err != nil {
 			continue
 		}
 		users, ok := optionsMap["users"].([]any)
@@ -121,7 +125,7 @@ func (t *Tracker) logConnection(ctx context.Context, network string, metadata ad
 
 	if matchedRule != nil {
 		entry.Rule = F.ToString(matchedRule, " (", matchedRule.Action(), ")")
-		entry.Action = matchedRule.Action().Type().String()
+		entry.Action = matchedRule.Action().Type()
 	} else {
 		entry.Action = "route"
 		entry.Rule = "final"
